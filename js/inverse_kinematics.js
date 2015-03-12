@@ -1,9 +1,13 @@
+var objectTypesLoaded = 0;
+var readyToRender = false;
+
 window.setInterval(function(){
-    updateInterval();
+    if (readyToRender  && objectTypesLoaded == 3);
+        updateInterval();
 }, 1);
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, document.getElementById("threejs-frame").offsetWidth/document.getElementById("threejs-frame").offsetHeight, 0.1, 1000 );
+var camera = new THREE.PerspectiveCamera( 60, document.getElementById("threejs-frame").offsetWidth/document.getElementById("threejs-frame").offsetHeight, 0.1, 1000 );
 var renderer = new THREE.WebGLRenderer();
 
 sLight = new THREE.SpotLight(0xFFEEBB,1.0);
@@ -36,7 +40,7 @@ scene.add( floor );
 robotArm = new RobotArm();
 var dimension = new THREE.Vector3(0.2,1.5,0.1);
 
-var N_SEGMENTS = 7;
+var N_SEGMENTS = 5;
 for (i = 0; i < N_SEGMENTS; i++) {
     robotArm.geometries[i] = new THREE.BoxGeometry();
     robotArm.rotationAxes[i] = new THREE.Vector3(0, 0, 1);
@@ -63,6 +67,7 @@ loader.load('inverse_kinematics/models/base.js', function (geometry, materials) 
     robotArm.cubes[0].castShadow = true;
     robotArm.cubes[0].receiveShadow = true;
     scene.add( robotArm.cubes[0] );
+    objectTypesLoaded++;
 });
 loader.load('inverse_kinematics/models/untitled.js', function (geometry, materials) {
     for (i = 1; i < N_SEGMENTS - 1; i++) {
@@ -74,6 +79,7 @@ loader.load('inverse_kinematics/models/untitled.js', function (geometry, materia
         robotArm.cubes[i].receiveShadow = true;
         scene.add( robotArm.cubes[i] );
     }
+    objectTypesLoaded++;
 });
 loader.load('inverse_kinematics/models/pen.js', function (geometry, materials) {
     robotArm.geometries[N_SEGMENTS - 1] = geometry;//new THREE.BoxGeometry( dimension.x, dimension.y, dimension.z );
@@ -83,6 +89,7 @@ loader.load('inverse_kinematics/models/pen.js', function (geometry, materials) {
     robotArm.cubes[N_SEGMENTS - 1].castShadow = true;
     robotArm.cubes[N_SEGMENTS - 1].receiveShadow = true;
     scene.add( robotArm.cubes[N_SEGMENTS - 1] );
+    objectTypesLoaded++;
 });
 
 robotArm.rotationAxes[0] = new THREE.Vector3(0, 1, 0);
@@ -101,7 +108,7 @@ for( var i = 0; i < particleGeometry.vertices.length; i++ ) {
     colors[i] = new THREE.Color(0x000000);
 }
 particleGeometry.colors = colors;
-var particleMaterial = new THREE.PointCloudMaterial( { vertexColors: THREE.VertexColors, size: 0.05,} );
+var particleMaterial = new THREE.PointCloudMaterial( { vertexColors: THREE.VertexColors, size: 0.06,} );
 particleMaterial.color.setHSL( 1.0, 0.3, 0.7 );
 var particles = new THREE.PointCloud( particleGeometry, particleMaterial );
 scene.add( particles );
@@ -120,9 +127,9 @@ var VrotX = new THREE.Matrix4();
 var VrotY = new THREE.Matrix4();
 var VrotZ = new THREE.Matrix4();
 
-Vtrans.makeTranslation(0, 4.5, 3);
+Vtrans.makeTranslation(0, 4, 3);
 VrotX.makeRotationX(-Math.PI * 0.27);
-VrotY.makeRotationY(Math.PI * 0.3);
+VrotY.makeRotationY(Math.PI * 0.25);
 
 V.multiply(Vtrans);
 V.multiply(VrotY);
@@ -130,6 +137,7 @@ V.multiply(VrotX);
 
 camera.applyMatrix(V);
 
+readyToRender = true;
 
 var tap = true;
 document.addEventListener('touchstart',function(e) {
