@@ -83,11 +83,9 @@ RobotArm.prototype.updateAngles = function() {
 	};
 
 	var damping = 14;
-	var J_pinv = (((J.transpose().multiply(J)).
+	var J_inv = (((J.transpose().multiply(J)).
 		add(Matrix.I(P.length - 1).
 			multiply(damping^2))).inverse()).multiply(J.transpose());
-	// For Jacobian transpose method, uncomment:
-	// J_pinv = J.transpose();
 
 	var vFrom = new THREE.Vector3();
 	var vTo = new THREE.Vector3();
@@ -116,10 +114,10 @@ RobotArm.prototype.updateAngles = function() {
 			((3.1415)/6 - this.rotationAngles[i]) * 0.001;
 	};
 	var delta_theta_second = Matrix.I(P.length - 1).
-		subtract((J_pinv.multiply(J))).multiply(delta_theta_input);
+		subtract((J_inv.multiply(J))).multiply(delta_theta_input);
 
 	delta_e = delta_e.multiply(0.02); // Short step
-	var delta_theta = J_pinv.multiply(delta_e).add(delta_theta_second);
+	var delta_theta = J_inv.multiply(delta_e).add(delta_theta_second);
 
 	// The first segment can rotate freely (around y axis).
 	this.rotationAngles[0] += delta_theta.elements[0];
@@ -131,10 +129,10 @@ RobotArm.prototype.updateAngles = function() {
 	var endAffectorRotSpace = new THREE.Vector3();
 	targetPosRotSpace.copy(this.targetPos);
 	endAffectorRotSpace.copy(this.endAffector);
-	var rotYmatri = new THREE.Matrix4();
-	rotYmatri.makeRotationY(-this.rotationAngles[0]);
-	targetPosRotSpace.applyMatrix4(rotYmatri);
-	endAffectorRotSpace.applyMatrix4(rotYmatri);
+	var rotYmatrice = new THREE.Matrix4();
+	rotYmatrice.makeRotationY(-this.rotationAngles[0]);
+	targetPosRotSpace.applyMatrix4(rotYmatrice);
+	endAffectorRotSpace.applyMatrix4(rotYmatrice);
 
 	var maxDist = 0.8;
 	

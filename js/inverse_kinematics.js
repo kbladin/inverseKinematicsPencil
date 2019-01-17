@@ -121,6 +121,7 @@ renderer.setSize(
 renderer.shadowMapEnabled = true;
 renderer.shadowMapType = THREE.PCFSoftShadowMap;
 
+document.getElementById("threejs-frame").innerHTML = '';
 document.getElementById("threejs-frame").appendChild( renderer.domElement );
 
 var V = new THREE.Matrix4();
